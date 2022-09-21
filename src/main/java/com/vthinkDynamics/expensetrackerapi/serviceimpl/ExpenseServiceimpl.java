@@ -4,41 +4,44 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.vthinkDynamics.expensetrackerapi.entity.Expense;
+import com.vthinkDynamics.expensetrackerapi.exceptions.ResourceNotFoundException;
 import com.vthinkDynamics.expensetrackerapi.repository.ExpenseRepository;
 import com.vthinkDynamics.expensetrackerapi.services.ExpenseService;
 @Service
 public class ExpenseServiceimpl implements ExpenseService {
 
 	@Autowired
-	ExpenseRepository expenseRepo;
+	ExpenseRepository expenseRepository;
 	
 	@Override
-	public List<Expense> getAllExpenses() {
+	public Page<Expense> getAllExpenses(Pageable page) {
 		
-		return expenseRepo.findAll();
+		return expenseRepository.findAll(page);
 	}
 
 	@Override
 	public Expense getExpenseByID(Long id) {
-		Optional<Expense> expense = expenseRepo.findById(id);
+		Optional<Expense> expense = expenseRepository.findById(id);
 		if(expense.isPresent()) {
 			return expense.get();
 		}
-		throw new RuntimeException("ID is not found in DB");
+		throw new ResourceNotFoundException("ID is not found in DB"+id);
 	}
 
 	@Override
 	public String deleteExpenseByID(Long id) {
-		 expenseRepo.deleteById(id);
+		 expenseRepository.deleteById(id);
 		 return "Record deleted";
 	}
 
 	@Override
 	public Expense saveExpenseDetails(Expense expense) {
-		return expenseRepo.save(expense);
+		return expenseRepository.save(expense);
 	}
 
 	@Override
@@ -49,7 +52,12 @@ public class ExpenseServiceimpl implements ExpenseService {
 		ExExpenceObj.setCategory(expene.getCategory() != null ? expene.getCategory() : ExExpenceObj.getCategory());
 		ExExpenceObj.setAmount(expene.getAmount() != null ? expene.getAmount() : ExExpenceObj.getAmount());
 		ExExpenceObj.setDate(expene.getDate() != null ? expene.getDate() : ExExpenceObj.getDate());
-		return expenseRepo.save(ExExpenceObj);
+		return expenseRepository.save(ExExpenceObj);
+	}
+
+	@Override
+	public List<Expense> readByCategory(String category, Pageable page) {
+		return expenseRepository.findByCategory(category, page).toList();
 	}
 	
 	

@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,16 +31,20 @@ public class Expense {
 	private Long id;
 	
 	@Column(name ="expense_name")
+	@NotBlank(message="Name parameter is maindatory")
 	private String name;
 	
 	
 	private String description;
 	
+	@NotNull(message = "Expense amount should not be null")
 	@Column(name ="expense_amount")
 	private BigDecimal amount;
 	
+	@NotBlank(message = "Category should not be blank")
 	private String category;
 	
+	@NotNull(message = "Expense Date should not be null")
 	private Date date;
 	
 	@Column(name="created_at" ,nullable = false ,updatable =false )
